@@ -2,45 +2,60 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+  Outlet,
+  useRouter,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { AuthProvider, useAuth } from "@/lib/auth/authContext";
+import type { AuthUser } from "@/types/auth";
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
-import appCss from '../styles.css?url'
+import appCss from "../styles.css?url";
 
-import type { QueryClient } from '@tanstack/react-query'
-import { TooltipProvider } from '../components/ui/tooltip'
+import type { QueryClient } from "@tanstack/react-query";
+import { TooltipProvider } from "../components/ui/tooltip";
 
 interface MyRouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
+  auth: { user: AuthUser | null; isLoading: boolean };
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "TanStack Start Starter" },
     ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument,
-})
+  // ✅ component handles the auth-wrapped outlet
+  component: RootComponent,
+});
 
+// Wraps the route tree with AuthProvider
+function RootComponent() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  router.update({
+    context: {
+      ...router.options.context,
+      auth: { user, isLoading },
+    },
+  });
+
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
+}
+
+// shellComponent is the full HTML shell — no auth logic here
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -51,12 +66,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <TooltipProvider>
           {children}
           <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
+            config={{ position: "bottom-right" }}
             plugins={[
               {
-                name: 'Tanstack Router',
+                name: "Tanstack Router",
                 render: <TanStackRouterDevtoolsPanel />,
               },
               TanStackQueryDevtools,
@@ -66,5 +79,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
