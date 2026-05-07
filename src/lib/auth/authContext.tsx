@@ -7,7 +7,7 @@ import {
 } from "react";
 import { apiClient } from "./authClient";
 import { authStore } from "./authStore";
-import type { AuthUser } from "@/types/auth";
+import type { AuthProviderProps, AuthUser } from "@/types/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -18,9 +18,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sync auth state → router context whenever it changes
+  useEffect(() => {
+    onAuthChange?.(user, isLoading);
+  }, [user, isLoading]);
 
   // On app load, try to restore session via refresh token cookie
   useEffect(() => {
