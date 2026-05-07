@@ -1,1 +1,1 @@
-export type { AuthUser } from "./auth-user";
+export type { AuthUser, AuthProviderProps } from "./auth-user";

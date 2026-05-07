@@ -16,6 +16,7 @@ import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "../components/ui/tooltip";
+import { useEffect } from "react";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -38,21 +39,32 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 // Wraps the route tree with AuthProvider
 function RootComponent() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-
-  router.update({
-    context: {
-      ...router.options.context,
-      auth: { user, isLoading },
-    },
-  });
-
   return (
     <AuthProvider>
+      <AuthSync />
       <Outlet />
     </AuthProvider>
   );
+}
+
+// Lives inside AuthProvider so both useAuth() and useRouter() are safe
+function AuthSync() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.update({
+      context: {
+        ...router.options.context,
+        auth: { user, isLoading },
+      },
+    });
+    if (!isLoading) {
+      router.invalidate();
+    }
+  }, [user, isLoading]);
+
+  return null;
 }
 
 // shellComponent is the full HTML shell — no auth logic here
