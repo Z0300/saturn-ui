@@ -12,20 +12,16 @@ import type { AuthProviderProps, AuthUser } from "@/types/auth";
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  // Accepts token + user returned by the API — does NOT call the API itself
+  login: (token: string, user: AuthUser) => void;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Sync auth state → router context whenever it changes
-  useEffect(() => {
-    onAuthChange?.(user, isLoading);
-  }, [user, isLoading]);
 
   // On app load, try to restore session via refresh token cookie
   useEffect(() => {
@@ -43,13 +39,10 @@ export function AuthProvider({ children, onAuthChange }: AuthProviderProps) {
     restoreSession();
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { data } = await apiClient.post("/api/auth/login", {
-      email,
-      password,
-    });
-    authStore.setToken(data.accessToken);
-    setUser(data.user);
+  // Pure state setter — the mutation handles the API call
+  const login = useCallback((token: string, authUser: AuthUser) => {
+    authStore.setToken(token);
+    setUser(authUser);
     // Spring Boot sets the httpOnly refresh cookie automatically
   }, []);
 
