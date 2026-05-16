@@ -3,15 +3,15 @@ import { routeTree } from "./routeTree.gen";
 
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { getContext } from "./integrations/tanstack-query/root-provider";
-import { ErrorPage } from "./components/common/error";
-import { NotFoundPage } from "./components/common/not-found";
+import { ErrorPage } from "./components/error";
+import { NotFoundPage } from "./components/not-found";
 
 export function getRouter() {
   const context = getContext();
 
   const router = createTanStackRouter({
     routeTree,
-    context: { ...context, auth: { user: null, isLoading: true } },
+    context: { ...context },
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
