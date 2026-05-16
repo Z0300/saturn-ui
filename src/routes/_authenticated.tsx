@@ -1,5 +1,4 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
-import { useAuth } from "@/lib/auth/authContext";
 import { SidebarProvider, SidebarTrigger } from "#/components/ui/sidebar";
 import { SidebarInset } from "#/components/ui/sidebar";
 import { Separator } from "#/components/ui/separator";
@@ -12,30 +11,44 @@ import {
   BreadcrumbSeparator,
 } from "#/components/ui/breadcrumb";
 import { AppSidebar } from "#/components/app-sidebar";
+import { useAuthStore } from "@/store/authStore";
+import { isTokenExpired } from "@/utils/jwt";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: ({ context }) => {
-    // While the refresh-token check is in flight, do not redirect
-    if (context.auth.isLoading) return;
+  beforeLoad: async () => {
+    const { accessToken, refreshToken, setAuth, clearAuth } =
+      useAuthStore.getState();
 
-    if (!context.auth.user) {
-      throw redirect({ to: "/login", search: { redirect: location.href } });
+    if (accessToken && !isTokenExpired(accessToken)) return;
+
+    if (!refreshToken) {
+      clearAuth();
+      throw redirect({ to: "/login" });
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        },
+      );
+
+      if (!res.ok) throw new Error("Refresh failed");
+
+      const json = await res.json();
+      setAuth(json.data);
+    } catch {
+      clearAuth();
+      throw redirect({ to: "/login" });
     }
   },
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
-  const { isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
-      </div>
-    );
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -50,9 +63,7 @@ function AuthenticatedLayout() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Saturn UI
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Saturn UI</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
