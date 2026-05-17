@@ -1,24 +1,44 @@
-import { Permissions, Roles } from "#/constants/permissions";
+import { redirect } from "@tanstack/react-router";
+import { Roles } from "@/constants/permissions";
+import type { AuthState } from "#/types";
 
-export function getRedirectPath(roles: string[], permissions: string[]): string {
-  // Highest privilege first
-  if (roles.includes(Roles.SUPER_ADMIN)) {
-    return '/users'             // ← full access, go to user management
-  }
+export function requirePermission(permission: string) {
+  return ({ context }: { context: { auth: AuthState } }) => {
+    const { permissions, roles } = context.auth;
 
-  if (roles.includes(Roles.ADMIN)) {
-    return '/users'             // ← admin sees users too
-  }
+    if (roles.includes(Roles.SUPER_ADMIN)) return;
 
-  if (roles.includes(Roles.MODERATOR)) {
-    return '/dashboard'         // ← moderator goes to dashboard
-  }
+    if (!permissions.includes(permission)) {
+      throw redirect({ to: "/unauthorized" });
+    }
+  };
+}
 
-  // Regular user — only has profile access
-  if (permissions.includes(Permissions.PROFILE_READ)) {
-    return '/dashboard'
-  }
+export function requireRole(role: string) {
+  return ({ context }: { context: { auth: AuthState } }) => {
+    const { roles } = context.auth;
 
-  // Fallback
-  return '/dashboard'
+    if (!roles.includes(role)) {
+      throw redirect({ to: "/unauthorized" });
+    }
+  };
+}
+
+export function requireAnyRole(...requiredRoles: string[]) {
+  return ({ context }: { context: { auth: AuthState } }) => {
+    const { roles } = context.auth;
+
+    if (!requiredRoles.some((r) => roles.includes(r))) {
+      throw redirect({ to: "/unauthorized" });
+    }
+  };
+}
+
+export function getRedirectPath(
+  roles: string[],
+  permissions: string[],
+): string {
+  if (roles.includes(Roles.SUPER_ADMIN)) return "/users";
+  if (roles.includes(Roles.ADMIN)) return "/users";
+  return "/";
 }
