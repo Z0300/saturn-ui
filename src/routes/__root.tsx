@@ -12,9 +12,11 @@ import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "../components/ui/tooltip";
+import type { AuthState } from "#/types";
 
 interface MyRouterContext {
   queryClient: QueryClient;
+  auth: AuthState;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({

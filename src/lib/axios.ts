@@ -1,20 +1,24 @@
+// lib/axios.ts
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import { isTokenExpired } from "../utils/jwt";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, // ✅ sends httpOnly cookie automatically on every request
 });
 
+// ── Request interceptor ───────────────────────────────────────────────────────
 api.interceptors.request.use(async (config) => {
-  const { accessToken, refreshToken, setAuth, clearAuth } =
-    useAuthStore.getState();
+  const { accessToken, setAuth, clearAuth } = useAuthStore.getState();
 
+  // Access token expired — proactively refresh before sending request
   if (accessToken && isTokenExpired(accessToken)) {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
-        { refreshToken },
+        null, // ← no body needed, cookie is sent automatically
+        { withCredentials: true }, // ← send httpOnly cookie
       );
       setAuth(data.data);
       config.headers.Authorization = `Bearer ${data.data.accessToken}`;
@@ -30,6 +34,7 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// ── Response interceptor ──────────────────────────────────────────────────────
 let isRefreshing = false;
 let queue: Array<(token: string) => void> = [];
 
@@ -42,6 +47,7 @@ api.interceptors.response.use(
       original._retry = true;
 
       if (isRefreshing) {
+        // Queue requests while refresh is in progress
         return new Promise((resolve) => {
           queue.push((token) => {
             original.headers.Authorization = `Bearer ${token}`;
@@ -51,12 +57,13 @@ api.interceptors.response.use(
       }
 
       isRefreshing = true;
-      const { refreshToken, setAuth, clearAuth } = useAuthStore.getState();
+      const { setAuth, clearAuth } = useAuthStore.getState(); // ← no refreshToken needed
 
       try {
         const { data } = await axios.post(
           `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
-          { refreshToken },
+          null, // ← no body needed
+          { withCredentials: true }, // ← cookie sent automatically
         );
 
         setAuth(data.data);
@@ -66,6 +73,7 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         clearAuth();
+        queue = [];
         window.location.href = "/login";
       } finally {
         isRefreshing = false;

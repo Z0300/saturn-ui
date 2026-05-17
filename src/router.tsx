@@ -5,15 +5,16 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { getContext } from "./integrations/tanstack-query/root-provider";
 import { ErrorPage } from "./components/error";
 import { NotFoundPage } from "./components/not-found";
+import { useAuthStore } from "./store/authStore";
 
 export function getRouter() {
   const context = getContext();
 
   const router = createTanStackRouter({
     routeTree,
-    context: { ...context },
+    context: { ...context, auth: useAuthStore.getState() },
     scrollRestoration: true,
-    defaultPreload: "intent",
+    defaultPreload: false,
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: ErrorPage,
     defaultNotFoundComponent: NotFoundPage,

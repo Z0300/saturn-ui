@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "#/components/ui/sidebar";
 import { SidebarInset } from "#/components/ui/sidebar";
 import { Separator } from "#/components/ui/separator";
@@ -13,42 +13,55 @@ import {
 import { AppSidebar } from "#/components/app-sidebar";
 import { useAuthStore } from "@/store/authStore";
 import { isTokenExpired } from "@/utils/jwt";
+import { api } from "@/lib/axios";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: async () => {
-    const { accessToken, refreshToken, setAuth, clearAuth } =
-      useAuthStore.getState();
-
-    if (accessToken && !isTokenExpired(accessToken)) return;
-
-    if (!refreshToken) {
-      clearAuth();
-      throw redirect({ to: "/login" });
-    }
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-        },
-      );
-
-      if (!res.ok) throw new Error("Refresh failed");
-
-      const json = await res.json();
-      setAuth(json.data);
-    } catch {
-      clearAuth();
-      throw redirect({ to: "/login" });
-    }
-  },
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
+  const navigate = useNavigate();
+  const { accessToken, setAuth, clearAuth } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      // Token valid — proceed
+      if (accessToken && !isTokenExpired(accessToken)) {
+        setIsChecking(false);
+        return;
+      }
+
+      // No valid access token — try refresh via httpOnly cookie
+      try {
+        const { data } = await api.post("/v1/auth/refresh");
+        setAuth(data.data);
+      } catch {
+        clearAuth();
+        navigate({ to: "/login" });
+        return; // ✅ return early — don't setIsChecking(false) on redirect
+      } finally {
+        setIsChecking(false);
+      }
+    }
+
+    checkAuth();
+  }, [accessToken]);
+
+  // ✅ Show nothing if no token at all — prevents any flash
+  if (!accessToken && !isChecking) {
+    return null;
+  }
+
+  if (isChecking) {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />

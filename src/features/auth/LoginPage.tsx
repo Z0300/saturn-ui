@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { LoginSchema } from "@/schemas";
 import {
   Card,
@@ -20,8 +20,7 @@ interface LoginFormProps {
 }
 
 export function LoginPage({ redirectTo }: LoginFormProps) {
-  const navigate = useNavigate();
-  const loginMutation = useLoginMutation();
+  const loginMutation = useLoginMutation(redirectTo);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
@@ -34,7 +33,6 @@ export function LoginPage({ redirectTo }: LoginFormProps) {
     },
     onSubmit: async ({ value }) => {
       await loginMutation.mutateAsync(value);
-      await navigate({ to: redirectTo ?? "/dashboard" });
     },
   });
 
@@ -105,10 +103,16 @@ export function LoginPage({ redirectTo }: LoginFormProps) {
                         <button
                           type="button"
                           onClick={() => setShowPassword((v) => !v)}
-                          aria-label={showPassword ? "Hide password" : "Show password"}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
                           className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {showPassword ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
                         </button>
                       </div>
                       {errors.length > 0 && (

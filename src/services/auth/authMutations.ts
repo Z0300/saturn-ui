@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
@@ -6,7 +6,7 @@ import type { AuthResponse } from "@/types/auth";
 import type { LoginRequest, RegisterRequest } from "@/types/auth";
 import { getRedirectPath } from "@/utils/routeGuard";
 
-export function useLoginMutation() {
+export function useLoginMutation(redirectTo?: string) {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ export function useLoginMutation() {
       setAuth(response.data);
       const { roles, permissions } = useAuthStore.getState();
 
-      navigate({ to: getRedirectPath(roles, permissions) });
+      navigate({ to: redirectTo ?? getRedirectPath(roles, permissions) });
     },
   });
 }
@@ -40,18 +40,14 @@ export function useRegisterMutation() {
 
 export function useLogoutMutation() {
   const { clearAuth } = useAuthStore();
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => api.post("/v1/auth/logout").then((r) => r.data),
-
-    onSuccess: () => {
+    onSettled: () => {
+      queryClient.clear();
       clearAuth();
-      navigate({ to: "/login" });
-    },
-    onError: () => {
-      clearAuth();
-      navigate({ to: "/login" });
+      window.location.href = "/login";
     },
   });
 }

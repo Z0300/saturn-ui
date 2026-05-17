@@ -16,8 +16,8 @@ import {
   GalleryVerticalEndIcon,
   AudioLinesIcon,
   TerminalIcon,
-  TerminalSquareIcon,
   LayoutDashboardIcon,
+  Settings2Icon,
 } from "lucide-react";
 import { AppBrand } from "./app-brand";
 
@@ -51,22 +51,21 @@ const data = {
       icon: <LayoutDashboardIcon />,
     },
     {
-      title: "Playground",
-      url: "#",
-      icon: <TerminalSquareIcon />,
-      isActive: true,
+      title: "Access Management",
+      url: "/#",
+      icon: <Settings2Icon />,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Users",
+          url: "/users",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Roles",
+          url: "/roles",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Permissions",
+          url: "/permissions",
         },
       ],
     },
