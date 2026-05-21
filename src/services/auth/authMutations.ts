@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import type { AuthResponse } from "@/types/auth";
 import type { LoginRequest, RegisterRequest } from "@/types/auth";
 import { getRedirectPath } from "@/utils/routeGuard";
+import { navigate } from "@/lib/navigate";
 
 export function useLoginMutation(redirectTo?: string) {
   const { setAuth } = useAuthStore();
@@ -47,7 +48,7 @@ export function useLogoutMutation() {
     onSettled: () => {
       queryClient.clear();
       clearAuth();
-      window.location.href = "/login";
+      navigate({ to: "/login" });
     },
   });
 }

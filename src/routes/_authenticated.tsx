@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useMatches, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "#/components/ui/sidebar";
 import { SidebarInset } from "#/components/ui/sidebar";
 import { Separator } from "#/components/ui/separator";
@@ -15,6 +15,7 @@ import { useAuthStore } from "@/store/authStore";
 import { isTokenExpired } from "@/utils/jwt";
 import { api } from "@/lib/axios";
 import { useEffect, useState } from "react";
+import { registerNavigate } from "@/lib/navigate";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
@@ -24,23 +25,31 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
   const { accessToken, setAuth, clearAuth } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
+  
+  // Get title from the current route's static data
+  const matches = useMatches()
+  const currentMatch = matches[matches.length - 1]
+  const title = currentMatch?.staticData?.title ?? ''
 
   useEffect(() => {
+   
+    registerNavigate(({ to, replace }) =>
+      navigate({ to, replace })
+    );
+
     async function checkAuth() {
-      // Token valid — proceed
       if (accessToken && !isTokenExpired(accessToken)) {
         setIsChecking(false);
         return;
       }
 
-      // No valid access token — try refresh via httpOnly cookie
       try {
         const { data } = await api.post("/v1/auth/refresh");
         setAuth(data.data);
       } catch {
         clearAuth();
         navigate({ to: "/login" });
-        return; // ✅ return early — don't setIsChecking(false) on redirect
+        return; 
       } finally {
         setIsChecking(false);
       }
@@ -49,7 +58,7 @@ function AuthenticatedLayout() {
     checkAuth();
   }, [accessToken]);
 
-  // ✅ Show nothing if no token at all — prevents any flash
+
   if (!accessToken && !isChecking) {
     return null;
   }
@@ -80,7 +89,7 @@ function AuthenticatedLayout() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>{title}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

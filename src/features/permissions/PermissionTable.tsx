@@ -1,0 +1,110 @@
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  type ColumnDef,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { PaginatedResponse } from "#/types";
+import { TablePagination } from "#/components/pagination";
+
+interface PermissionsTableProps<TData> {
+  data?: PaginatedResponse<TData>;
+  columns: ColumnDef<TData>[];
+  isLoading?: boolean;
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number, size?: number) => void;
+}
+
+export function PermissionsTable<TData>({
+  data,
+  columns,
+  isLoading,
+  page,
+  pageSize,
+  onPageChange,
+}: PermissionsTableProps<TData>) {
+  const table = useReactTable({
+    data: data?.data ?? [],
+    columns,
+    pageCount: data?.meta.totalPages ?? -1,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      pagination: {
+        pageIndex: page,
+        pageSize: pageSize,
+      },
+    },
+  });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="text-center py-8">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
+
+            {!isLoading && (data?.data ?? []).length === 0 && (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="text-center py-8">
+                  No data found
+                </TableCell>
+              </TableRow>
+            )}
+
+            {!isLoading &&
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {!isLoading && data && data.meta.totalElements > data.meta.size && (
+        <TablePagination
+          table={table}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+        />
+      )}
+    </div>
+  );
+}

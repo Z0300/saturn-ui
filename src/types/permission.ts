@@ -1,4 +1,3 @@
-// types/permission.ts
 export interface Permission {
   id: number;
   name: string;
@@ -11,25 +10,14 @@ export interface CreatePermissionRequest {
 }
 
 export interface UpdatePermissionRequest {
+  id: number;
   name?: string;
   description?: string;
 }
 
-// API response shapes
-export interface PaginatedResponse<T> {
-  success: boolean;
-  message: string;
-  data: {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-    number: number;
-    size: number;
-  };
+export interface PermissionsFilterRequest {
+  page?: number;
+  size?: number;
+  search?: string;
 }
 
-export interface SingleResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}

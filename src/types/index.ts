@@ -1,4 +1,3 @@
-// types/index.ts
 export type {
   AuthUser,
   AuthProviderProps,
@@ -26,6 +25,9 @@ export type {
   Permission,
   CreatePermissionRequest,
   UpdatePermissionRequest,
+} from "./permission";
+
+export type {
   PaginatedResponse,
   SingleResponse,
-} from "./permission";
+} from "./response";

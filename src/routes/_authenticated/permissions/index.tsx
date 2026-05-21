@@ -7,5 +7,8 @@ export const Route = createFileRoute("/_authenticated/permissions/")({
   beforeLoad: () => {
     requirePermission(Permissions.PERMISSIONS_READ);
   },
+  staticData: {
+    title: "Permission Management",
+  },
   component: PermissionsPage,
 });

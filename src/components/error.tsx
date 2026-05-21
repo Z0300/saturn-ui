@@ -15,9 +15,6 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
         <h1 className="text-2xl font-semibold tracking-tight">
           Something went wrong
         </h1>
-        <p className="max-w-sm text-sm text-muted-foreground leading-relaxed">
-          An unexpected error occurred. You can try again or go back home.
-        </p>
       </div>
 
       {error?.message && (
@@ -25,7 +22,7 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
           <TriangleAlert className="h-4 w-4" />
           <AlertTitle>Error details</AlertTitle>
           <AlertDescription className="font-mono text-xs break-all">
-            {error.message}
+          An unexpected error occurred. You can try again or go back home.
           </AlertDescription>
         </Alert>
       )}
