@@ -1,4 +1,3 @@
-import type { User } from "./user";
 
 export interface AuthUser {
   id: number;

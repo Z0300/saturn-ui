@@ -1,9 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { UnauthorizedPage } from "#/features/auth/UnauthorizedPage";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/unauthorized')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/unauthorized")({
+  component: UnauthorizedComponent,
+});
 
-function RouteComponent() {
-  return <div>Hello "/unauthorized"!</div>
+function UnauthorizedComponent() {
+  return <UnauthorizedPage />;
 }
+
+
+

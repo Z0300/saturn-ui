@@ -6,7 +6,7 @@ export const Route = createFileRoute("/_authenticated/users/")({
     const { permissions } = useAuthStore.getState();
 
     if (!permissions.includes("users:read")) {
-      throw redirect({ to: "/unauthorized" });
+      throw redirect({ to: "/unauthorized", reloadDocument: false });
     }
   },
   component: UsersPage,

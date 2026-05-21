@@ -9,7 +9,7 @@ export function requirePermission(permission: string) {
     if (roles.includes(Roles.SUPER_ADMIN)) return;
 
     if (!permissions.includes(permission)) {
-      throw redirect({ to: "/unauthorized" });
+      throw redirect({ to: "/unauthorized", reloadDocument: false });
     }
   };
 }
@@ -19,7 +19,7 @@ export function requireRole(role: string) {
     const { roles } = context.auth;
 
     if (!roles.includes(role)) {
-      throw redirect({ to: "/unauthorized" });
+      throw redirect({ to: "/unauthorized", reloadDocument: false });
     }
   };
 }
@@ -29,14 +29,14 @@ export function requireAnyRole(...requiredRoles: string[]) {
     const { roles } = context.auth;
 
     if (!requiredRoles.some((r) => roles.includes(r))) {
-      throw redirect({ to: "/unauthorized" });
+      throw redirect({ to: "/unauthorized", reloadDocument: false });
     }
   };
 }
 
 export function getRedirectPath(
   roles: string[],
-  permissions: string[],
+  _permissions: string[],
 ): string {
   if (roles.includes(Roles.SUPER_ADMIN)) return "/users";
   if (roles.includes(Roles.ADMIN)) return "/users";

@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import { isTokenExpired } from "../utils/jwt";
+import { navigate } from "../lib/navigate";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -24,7 +25,7 @@ api.interceptors.request.use(async (config) => {
       config.headers.Authorization = `Bearer ${data.data.accessToken}`;
     } catch {
       clearAuth();
-      window.location.href = "/login";
+      navigate({ to: "/login" });
       return Promise.reject("Session expired");
     }
   } else if (accessToken) {
@@ -74,7 +75,7 @@ api.interceptors.response.use(
       } catch {
         clearAuth();
         queue = [];
-        window.location.href = "/login";
+        navigate({ to: "/login" });
       } finally {
         isRefreshing = false;
       }

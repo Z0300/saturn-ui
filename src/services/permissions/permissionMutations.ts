@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { permissionKeys } from "./permissionQueries";
 import type { CreatePermissionRequest, UpdatePermissionRequest } from "@/types";
+import { toast } from "sonner";
 
 export function useCreatePermissionMutation() {
   const queryClient = useQueryClient();
@@ -11,18 +12,20 @@ export function useCreatePermissionMutation() {
       api.post("/v1/permissions", data).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.all });
+      toast.success("Permission created successfully");
     },
   });
 }
 
-export function useUpdatePermissionMutation(id: number) {
+export function useUpdatePermissionMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: UpdatePermissionRequest) =>
-      api.patch(`/v1/permissions/${id}`, data).then((r) => r.data.data),
+      api.patch(`/v1/permissions/${data.id}`, data).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.all });
+      toast.success("Permission updated successfully");
     },
   });
 }
@@ -35,6 +38,7 @@ export function useDeletePermissionMutation() {
       api.delete(`/v1/permissions/${id}`).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.all });
+      toast.success("Permission deleted successfully");
     },
   });
 }

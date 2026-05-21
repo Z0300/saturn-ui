@@ -2,23 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { useRbac } from "@/hooks/useRbac";
 import { Permissions } from "@/constants/permissions";
-import type { Permission, SingleResponse } from "@/types";
+import type { PaginatedResponse, Permission, SingleResponse } from "@/types";
+import type { PermissionsFilterRequest } from "#/types/permission";
 
 export const permissionKeys = {
   all: ["permissions"] as const,
-  list: () => ["permissions", "list"] as const,
+  list: (filters?: PermissionsFilterRequest) => ["permissions", "list", filters] as const,
   detail: (id: number) => ["permissions", id] as const,
 };
 
-export function usePermissions() {
+export function usePermissions(filters?: PermissionsFilterRequest) {
   const { hasPermission } = useRbac();
 
   return useQuery({
-    queryKey: permissionKeys.list(),
+    queryKey: permissionKeys.list(filters),
     queryFn: () =>
-      api
-        .get<{ data: Permission[] }>("/v1/permissions")
-        .then((r) => r.data.data),
+      api.get<PaginatedResponse<Permission>>("/v1/permissions", {params: filters}).then((r) => r.data),
     enabled: hasPermission(Permissions.PERMISSIONS_READ),
   });
 }
