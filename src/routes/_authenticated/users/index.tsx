@@ -1,17 +1,16 @@
-import { useAuthStore } from "#/store/authStore";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { UsersPage } from "#/features/users/UserPage";
+import { createFileRoute } from "@tanstack/react-router";
+import { requirePermission } from "#/utils/routeGuard";
+import { Permissions } from "#/constants/permissions";
+
 
 export const Route = createFileRoute("/_authenticated/users/")({
   beforeLoad: () => {
-    const { permissions } = useAuthStore.getState();
-
-    if (!permissions.includes("users:read")) {
-      throw redirect({ to: "/unauthorized", reloadDocument: false });
-    }
+    requirePermission(Permissions.USERS_READ);
   },
   component: UsersPage,
+  staticData: {
+    title: "User Management"
+  }
 });
 
-function UsersPage() {
-  return <div>Hello "/_authenticated/users/"!</div>;
-}

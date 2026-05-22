@@ -156,12 +156,6 @@ export function LoginPage({ redirectTo }: LoginFormProps) {
                 )}
               />
 
-              <p className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{" "}
-                <Link className="underline underline-offset-4" to="/signup">
-                  Register
-                </Link>
-              </p>
             </form>
           </CardContent>
         </Card>

@@ -14,6 +14,7 @@ export interface CreateRoleRequest {
 }
 
 export interface UpdateRoleRequest {
+  id: number;
   name?: string;
   description?: string;
 }
@@ -21,3 +22,10 @@ export interface UpdateRoleRequest {
 export interface AssignPermissionsRequest {
   permissionIds: number[];
 }
+
+export interface RolesFilterRequest {
+  page?: number
+  size?: number
+  search?: string
+}
+
