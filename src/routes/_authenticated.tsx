@@ -25,14 +25,13 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
   const { accessToken, setAuth, clearAuth } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
-  
-  // Get title from the current route's static data
+
   const matches = useMatches()
   const currentMatch = matches[matches.length - 1]
   const title = currentMatch?.staticData?.title ?? ''
 
   useEffect(() => {
-   
+
     registerNavigate(({ to, replace }) =>
       navigate({ to, replace })
     );
@@ -49,7 +48,7 @@ function AuthenticatedLayout() {
       } catch {
         clearAuth();
         navigate({ to: "/login" });
-        return; 
+        return;
       } finally {
         setIsChecking(false);
       }

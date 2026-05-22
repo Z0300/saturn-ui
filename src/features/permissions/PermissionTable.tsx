@@ -13,37 +13,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { PaginatedResponse } from "#/types";
+import type { PaginatedResponse, Permission } from "#/types";
 import { TablePagination } from "#/components/pagination";
 
-interface PermissionsTableProps<TData> {
-  data?: PaginatedResponse<TData>;
-  columns: ColumnDef<TData>[];
+interface PermissionsTableProps {
+  data?: PaginatedResponse<Permission> | undefined;
+  columns: ColumnDef<Permission>[];
   isLoading?: boolean;
   page: number;
   pageSize: number;
   onPageChange: (page: number, size?: number) => void;
 }
 
-export function PermissionsTable<TData>({
+export function PermissionsTable({
   data,
   columns,
   isLoading,
   page,
   pageSize,
   onPageChange,
-}: PermissionsTableProps<TData>) {
+}: PermissionsTableProps) {
+  const permissions = data?.data ?? []
+  const totalPages = data?.meta?.totalPages ?? 0
+
   const table = useReactTable({
-    data: data?.data ?? [],
+    data: permissions,
     columns,
-    pageCount: data?.meta.totalPages ?? -1,
+    pageCount: totalPages,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     state: {
       pagination: {
         pageIndex: page,
-        pageSize: pageSize,
+        pageSize,
       },
+    },
+    onPaginationChange: (updater) => {
+      const next = typeof updater === "function"
+        ? updater({ pageIndex: page, pageSize })
+        : updater
+      onPageChange(next.pageIndex, next.pageSize)
     },
   });
 

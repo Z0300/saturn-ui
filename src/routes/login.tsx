@@ -8,15 +8,10 @@ export const Route = createFileRoute("/login")({
   beforeLoad: () => {
     const { accessToken, roles, permissions } = useAuthStore.getState();
 
-    // Not logged in — stay on login page
     if (!accessToken || isTokenExpired(accessToken)) return;
 
-    // ✅ Already logged in — redirect based on role
     throw redirect({ to: getRedirectPath(roles, permissions) });
   },
-  component: LoginComponent,
+  component: LoginPage,
 });
 
-function LoginComponent() {
-  return <LoginPage />;
-}

@@ -8,24 +8,23 @@ import type {
   PaginatedResponse,
   SingleResponse,
 } from "@/types";
+import type { UsersFilterRequest } from "@/types/user";
 
 export const userKeys = {
   all: ["users"] as const,
-  list: (search?: string, page = 0) => ["users", "list", search, page] as const,
+  list: (filters?: UsersFilterRequest) => ["users", "list", filters] as const,
   detail: (id: number) => ["users", id] as const,
 };
 
-export function useUsers(search?: string, page = 0, size = 10) {
+export function useUsers(filters?: UsersFilterRequest) {
   const { hasPermission } = useRbac();
 
   return useQuery({
-    queryKey: userKeys.list(search, page),
+    queryKey: userKeys.list(filters),
     queryFn: () =>
       api
-        .get<PaginatedResponse<UserSummary>>("/v1/users", {
-          params: { search, page, size },
-        })
-        .then((r) => r.data.data),
+        .get<PaginatedResponse<UserSummary>>("/v1/users", { params: filters })
+        .then((r) => r.data),
     enabled: hasPermission(Permissions.USERS_READ),
   });
 }

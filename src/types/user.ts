@@ -18,6 +18,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   roles: Role[];
+  avatar: string;
 }
 
 export interface UserSummary {
@@ -45,4 +46,10 @@ export interface UpdateUserRequest {
 
 export interface AssignRolesRequest {
   roleIds: number[];
+}
+
+export interface UsersFilterRequest {
+  page?: number;
+  size?: number;
+  search?: string;
 }
