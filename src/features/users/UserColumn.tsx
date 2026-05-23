@@ -20,10 +20,19 @@ export function createUserColumns({
     return [
         {
             accessorKey: "firstName",
-            header: "Name",
+            header: "First Name",
             cell: ({ row }) => (
                 <span className="font-medium">
-                    {row.original.firstName} {row.original.lastName}
+                    {row.original.firstName.toUpperCase()}
+                </span>
+            ),
+        },
+        {
+            accessorKey: "lastName",
+            header: "Last Name",
+            cell: ({ row }) => (
+                <span className="font-medium">
+                    {row.original.lastName.toUpperCase()}
                 </span>
             ),
         },

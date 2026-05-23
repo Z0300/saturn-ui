@@ -1,4 +1,3 @@
-// features/roles/RoleDialogs.tsx
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -22,24 +22,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Loader2Icon } from "lucide-react"
-import type { Role, Permission } from "@/types"
-import { usePermissions } from "@/services/permissions/permissionQueries"
-import { useState } from "react"
-import { Checkbox } from "#/components/ui/checkbox"
+import type { Role } from "@/types"
 
 interface RoleDialogsProps {
-  isCreateOpen:        boolean
-  setIsCreateOpen:     (open: boolean) => void
-  createMutation:      any
-  editTarget:          Role | null
-  setEditTarget:       (role: Role | null) => void
-  updateMutation:      any
-  deleteTarget:        Role | null
-  setDeleteTarget:     (role: Role | null) => void
-  deleteMutation:      any
-  permissionsTarget:   Role | null
-  setPermissionsTarget:(role: Role | null) => void
-  assignMutation:      any
+  isCreateOpen: boolean
+  setIsCreateOpen: (open: boolean) => void
+  createMutation: any
+  editTarget: Role | null
+  setEditTarget: (role: Role | null) => void
+  updateMutation: any
+  deleteTarget: Role | null
+  setDeleteTarget: (role: Role | null) => void
+  deleteMutation: any
 }
 
 export function RoleDialogs({
@@ -51,14 +45,11 @@ export function RoleDialogs({
   updateMutation,
   deleteTarget,
   setDeleteTarget,
-  deleteMutation,
-  permissionsTarget,
-  setPermissionsTarget,
-  assignMutation,
+  deleteMutation
 }: RoleDialogsProps) {
   return (
     <>
-      {/* Create */}
+
       <RoleFormDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
@@ -71,7 +62,7 @@ export function RoleDialogs({
         error={createMutation.error}
       />
 
-      {/* Edit */}
+
       {editTarget && (
         <RoleFormDialog
           open={!!editTarget}
@@ -88,16 +79,10 @@ export function RoleDialogs({
         />
       )}
 
-      {/* Manage Permissions */}
-      {permissionsTarget && (
-        <ManagePermissionsDialog
-          role={permissionsTarget}
-          onClose={() => setPermissionsTarget(null)}
-          assignMutation={assignMutation}
-        />
-      )}
 
-      {/* Delete */}
+
+
+
       <AlertDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
@@ -135,15 +120,14 @@ export function RoleDialogs({
   )
 }
 
-// ── Role Form Dialog ──────────────────────────────────────────────────────────
 
 interface RoleFormDialogProps {
-  open:          boolean
-  onOpenChange:  (open: boolean) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
   defaultValues?: Partial<{ name: string; description: string }>
-  onSubmit:      (values: { name: string; description: string }) => void
-  isPending:     boolean
-  error:         any
+  onSubmit: (values: { name: string; description: string }) => void
+  isPending: boolean
+  error: any
 }
 
 function RoleFormDialog({
@@ -158,7 +142,7 @@ function RoleFormDialog({
 
   const form = useForm({
     defaultValues: {
-      name:        defaultValues?.name        ?? "",
+      name: defaultValues?.name ?? "",
       description: defaultValues?.description ?? "",
     },
     onSubmit: async ({ value }) => onSubmit(value),
@@ -170,6 +154,9 @@ function RoleFormDialog({
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Role" : "Create Role"}</DialogTitle>
         </DialogHeader>
+        <DialogDescription>
+          {isEdit ? "Edit the role" : "Create a new role"}
+        </DialogDescription>
         <form
           className="flex flex-col gap-4"
           onSubmit={(e) => {
@@ -191,6 +178,7 @@ function RoleFormDialog({
                 <Input
                   id={field.name}
                   placeholder="e.g. MANAGER"
+                  autoComplete={field.name}
                   value={field.state.value}
                   onChange={(e) =>
                     field.handleChange(e.target.value.toUpperCase())
@@ -243,94 +231,3 @@ function RoleFormDialog({
   )
 }
 
-// ── Manage Permissions Dialog ─────────────────────────────────────────────────
-
-function ManagePermissionsDialog({
-  role,
-  onClose,
-  assignMutation,
-}: {
-  role:           Role
-  onClose:        () => void
-  assignMutation: any
-}) {
-  const { data: permissionsData } = usePermissions()
-  const allPermissions = permissionsData?.data ?? []
-
-  // Group by resource
-  const grouped = allPermissions.reduce((acc, p) => {
-    const resource = p.name.split(":")[0]
-    if (!acc[resource]) acc[resource] = []
-    acc[resource].push(p)
-    return acc
-  }, {} as Record<string, Permission[]>)
-
-  const currentIds = new Set(role.permissions.map((p) => p.id))
-  const [selected, setSelected] = useState<Set<number>>(currentIds)
-
-  const toggle = (id: number) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
-  const handleSave = () => {
-    assignMutation.mutate(
-      { roleId: role.id, data: { permissionIds: Array.from(selected) } },
-      { onSuccess: () => onClose() }
-    )
-  }
-
-  return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            Manage Permissions —{" "}
-            <span className="font-mono">{role.name}</span>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="flex flex-col gap-4 max-h-96 overflow-y-auto py-2">
-          {Object.entries(grouped).map(([resource, perms]) => (
-            <div key={resource} className="flex flex-col gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {resource}
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {perms.map((p) => (
-                  <label
-                    key={p.id}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <Checkbox
-                      checked={selected.has(p.id)}
-                      onCheckedChange={() => toggle(p.id)}
-                    />
-                    <span className="text-sm font-mono">
-                      {p.name.split(":")[1]}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={assignMutation.isPending}>
-            {assignMutation.isPending && (
-              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Save Permissions
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}

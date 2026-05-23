@@ -6,6 +6,7 @@ export type {
   RegisterRequest,
   TokenData,
   AuthState,
+  SidebarPermissions,
 } from "./auth";
 
 export type {
@@ -27,7 +28,4 @@ export type {
   UpdatePermissionRequest,
 } from "./permission";
 
-export type {
-  PaginatedResponse,
-  SingleResponse,
-} from "./response";
+export type { PaginatedResponse, SingleResponse } from "./response";

@@ -19,18 +19,18 @@ import { UserDialogs } from "./UserDialogs"
 export function UsersPage() {
     const [page, setPage] = useState(0)
     const [pageSize, setPageSize] = useState(20)
-    const [search, setSearch] = useState("")
-    const [debouncedSearch, setDebouncedSearch] = useState("")
+    const [searchTerm, setSearch] = useState("")
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
 
     useEffect(() => {
-        const handler = setTimeout(() => setDebouncedSearch(search), 300)
+        const handler = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300)
         return () => clearTimeout(handler)
-    }, [search])
+    }, [searchTerm])
 
     const { data, isLoading } = useUsers({
         page,
         size: pageSize,
-        search: debouncedSearch || undefined,
+        searchTerm: debouncedSearchTerm || undefined,
     })
 
     const createMutation = useCreateUserMutation()
@@ -74,8 +74,9 @@ export function UsersPage() {
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
+                        id="search-users"
                         placeholder="Search users..."
-                        value={search}
+                        value={searchTerm}
                         onChange={(e) => {
                             setSearch(e.target.value)
                             setPage(0)

@@ -4,7 +4,6 @@ import {
   useCreateRoleMutation,
   useUpdateRoleMutation,
   useDeleteRoleMutation,
-  useAssignPermissionsMutation,
 } from "@/services/roles/roleMutations"
 import type { Role } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -17,38 +16,37 @@ import { RolesTable } from "./RoleTable"
 import { RoleDialogs } from "./RoleDialogs"
 
 export function RolesPage() {
-  const [page,            setPage]            = useState(0)
-  const [pageSize,        setPageSize]        = useState(20)
-  const [search,          setSearch]          = useState("")
-  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(20)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
 
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedSearch(search), 300)
+    const handler = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300)
     return () => clearTimeout(handler)
-  }, [search])
+  }, [searchTerm])
 
   const { data, isLoading } = useRoles({
     page,
     size: pageSize,
-    search: debouncedSearch || undefined,
+    searchTerm: debouncedSearchTerm || undefined,
   })
 
-  const createMutation  = useCreateRoleMutation()
-  const updateMutation  = useUpdateRoleMutation()
-  const deleteMutation  = useDeleteRoleMutation()
-  const assignMutation  = useAssignPermissionsMutation()
+  const createMutation = useCreateRoleMutation()
+  const updateMutation = useUpdateRoleMutation()
+  const deleteMutation = useDeleteRoleMutation()
 
-  const [isCreateOpen,       setIsCreateOpen]       = useState(false)
-  const [editTarget,         setEditTarget]         = useState<Role | null>(null)
-  const [deleteTarget,       setDeleteTarget]       = useState<Role | null>(null)
-  const [permissionsTarget,  setPermissionsTarget]  = useState<Role | null>(null)
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<Role | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Role | null>(null)
+
 
   const columns = useMemo(
     () =>
       createRoleColumns({
-        onEdit:              setEditTarget,
-        onDelete:            setDeleteTarget,
-        onManagePermissions: setPermissionsTarget,
+        onEdit: setEditTarget,
+        onDelete: setDeleteTarget
       }),
     []
   )
@@ -74,10 +72,11 @@ export function RolesPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            id="roles"
             placeholder="Search roles..."
-            value={search}
+            value={searchTerm}
             onChange={(e) => {
-              setSearch(e.target.value)
+              setSearchTerm(e.target.value)
               setPage(0)
             }}
             className="pl-8"
@@ -104,9 +103,7 @@ export function RolesPage() {
         deleteTarget={deleteTarget}
         setDeleteTarget={setDeleteTarget}
         deleteMutation={deleteMutation}
-        permissionsTarget={permissionsTarget}
-        setPermissionsTarget={setPermissionsTarget}
-        assignMutation={assignMutation}
+
       />
     </div>
   )
