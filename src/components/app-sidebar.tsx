@@ -1,84 +1,65 @@
-"use client";
-
-import * as React from "react";
-
-import { NavMain } from "#/components/nav-main";
-import { NavUser } from "#/components/nav-user";
-
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "#/components/ui/sidebar";
-import {
-  GalleryVerticalEndIcon,
-  AudioLinesIcon,
-  TerminalIcon,
-  LayoutDashboardIcon,
-  Settings2Icon,
-} from "lucide-react";
-import { AppBrand } from "./app-brand";
-import { Route } from "@tanstack/react-router";
+import { Permissions } from "#/constants/permissions";
 import { useAuthStore } from "#/store/authStore";
+import { AudioLinesIcon, GalleryVerticalEndIcon, LayoutDashboardIcon, Settings2Icon, TerminalIcon } from "lucide-react";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "./ui/sidebar";
+import { AppBrand } from "./app-brand";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
-const data = {
-  teams: [
-    {
-      name: "Saturn UI",
-      logo: <GalleryVerticalEndIcon />,
-      plan: "Free",
-    },
-    {
-      name: "Acme Corp.",
-      logo: <AudioLinesIcon />,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: <TerminalIcon />,
-      plan: "Free",
-    },
-  ],
-  navMain: [
+const teams = [
+  {
+    name: "Saturn UI",
+    logo: <GalleryVerticalEndIcon />,
+    plan: "Free",
+  },
+  {
+    name: "Acme Corp.",
+    logo: <AudioLinesIcon />,
+    plan: "Startup",
+  },
+  {
+    name: "Evil Corp.",
+    logo: <TerminalIcon />,
+    plan: "Free",
+  },
+]
+
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, permissions } = useAuthStore();
+
+  const canReadUsers = permissions.includes(Permissions.USERS_READ)
+  const canReadRoles = permissions.includes(Permissions.ROLES_READ)
+  const canReadPermissions = permissions.includes(Permissions.PERMISSIONS_READ)
+  const canAccessManagement = canReadUsers || canReadRoles || canReadPermissions
+
+  const accessManagementItems = [
+    canReadUsers && { title: "Users", url: "/users" },
+    canReadRoles && { title: "Roles", url: "/roles" },
+    canReadPermissions && { title: "Permissions", url: "/permissions" },
+  ].filter(Boolean) as { title: string; url: string }[]
+
+  const navMain = [
     {
       title: "Dashboard",
       url: "/",
       icon: <LayoutDashboardIcon />,
     },
-    {
+    ...(canAccessManagement ? [{
       title: "Access Management",
       url: "/#",
       icon: <Settings2Icon />,
-      items: [
-        {
-          title: "Users",
-          url: "/users",
-        },
-        {
-          title: "Roles",
-          url: "/roles",
-        },
-        {
-          title: "Permissions",
-          url: "/permissions",
-        },
-      ],
-    },
-  ],
-};
+      items: accessManagementItems,
+    }] : []),
+  ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
-  const { user } = useAuthStore();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <AppBrand teams={data.teams} />
+        <AppBrand teams={teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

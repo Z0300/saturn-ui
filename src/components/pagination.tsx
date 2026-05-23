@@ -43,7 +43,7 @@ export function TablePagination<TData>({
             value={`${pageSize}`}
             onValueChange={(value) => onPageChange(0, Number(value))}
           >
-            <SelectTrigger size="sm" className="w-20">
+            <SelectTrigger id="rows-per-page" size="sm" className="w-20">
               <SelectValue />
             </SelectTrigger>
 

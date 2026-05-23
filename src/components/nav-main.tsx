@@ -13,17 +13,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "#/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronRightIcon } from "lucide-react";
 
-const activeClasses =
-  "[&.active]:bg-primary \
-   [&.active]:text-primary-foreground \
-   [&.active]:hover:bg-primary/90 \
-   [&.active]:hover:text-primary-foreground \
-   [&.active]:active:bg-primary/90 \
-   [&.active]:active:text-primary-foreground \
-   min-w-8 duration-200 ease-linear";
+
 
 export function NavMain({
   items,
@@ -39,6 +32,8 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -48,12 +43,18 @@ export function NavMain({
             <Collapsible
               key={item.title}
               asChild
-              defaultOpen={item.isActive}
+              defaultOpen={
+                item.isActive ||
+                item.items.some((sub) => pathname.startsWith(sub.url))
+              }
               className="group/collapsible"
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    isActive={item.items.some((sub) => pathname.startsWith(sub.url))}
+                  >
                     {item.icon}
                     <span>{item.title}</span>
                     <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -63,8 +64,14 @@ export function NavMain({
                   <SidebarMenuSub>
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <Link to={subItem.url} className={activeClasses}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname.startsWith(subItem.url)}
+                        >
+                          <Link
+                            to={subItem.url}
+                            activeOptions={{ exact: false }}
+                          >
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -77,7 +84,11 @@ export function NavMain({
           ) : (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton tooltip={item.title} asChild>
-                <Link to={item.url} className={activeClasses}>
+                <Link
+                  to={item.url}
+                  activeOptions={{ exact: true }}
+                  activeProps={{ className: 'bg-sidebar-accent text-sidebar-accent-foreground' }}
+                >
                   {item.icon}
                   <span>{item.title}</span>
                 </Link>

@@ -44,7 +44,6 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const logout = useLogoutMutation();
   const initials = getInitials(`${user?.firstName} ${user?.lastName}`)
-  console.log(`${user?.firstName} ${user?.lastName}`)
   return (
     <SidebarMenu>
       <SidebarMenuItem>

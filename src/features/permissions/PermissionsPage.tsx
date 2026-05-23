@@ -22,23 +22,23 @@ import { PermissionDialogs } from "./PermissionDialogs";
 export function PermissionsPage() {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(search);
+      setDebouncedSearchTerm(searchTerm);
     }, 300);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [search]);
+  }, [searchTerm]);
 
   const { data, isLoading } = usePermissions({
     page,
     size: pageSize,
-    search: debouncedSearch || undefined,
+    searchTerm: debouncedSearchTerm || undefined,
   });
 
   const createMutation = useCreatePermissionMutation();
@@ -80,10 +80,11 @@ export function PermissionsPage() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
+            id="permissions"
             placeholder="Search permissions..."
-            value={search}
+            value={searchTerm}
             onChange={(e) => {
-              setSearch(e.target.value);
+              setSearchTerm(e.target.value);
               setPage(0);
             }}
             className="pl-8"

@@ -51,5 +51,5 @@ export interface AssignRolesRequest {
 export interface UsersFilterRequest {
   page?: number;
   size?: number;
-  search?: string;
+  searchTerm?: string;
 }

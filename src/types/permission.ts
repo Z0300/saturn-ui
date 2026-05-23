@@ -18,6 +18,5 @@ export interface UpdatePermissionRequest {
 export interface PermissionsFilterRequest {
   page?: number;
   size?: number;
-  search?: string;
+  searchTerm?: string;
 }
-

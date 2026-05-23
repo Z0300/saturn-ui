@@ -1,4 +1,3 @@
-
 export interface AuthUser {
   id: number;
   email: string;
@@ -65,4 +64,11 @@ export interface AuthResponse {
       createdAt: string;
     };
   };
+}
+
+export interface SidebarPermissions {
+  canAccessManagement: boolean;
+  canReadUsers: boolean;
+  canReadRoles: boolean;
+  canReadPermissions: boolean;
 }

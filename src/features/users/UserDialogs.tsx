@@ -22,7 +22,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Loader2Icon } from "lucide-react"
-import type { UserSummary, Role } from "@/types"
+import type { UserSummary } from "@/types"
 import { useRoles } from "@/services/roles/roleQueries"
 import { useState } from "react"
 
@@ -174,8 +174,9 @@ function CreateUserDialog({
                             name="firstName"
                             children={(field) => (
                                 <div className="flex flex-col gap-1.5">
-                                    <Label>First Name</Label>
+                                    <Label htmlFor={field.name}>First Name</Label>
                                     <Input
+                                        id={field.name}
                                         placeholder="John"
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
@@ -187,8 +188,9 @@ function CreateUserDialog({
                             name="lastName"
                             children={(field) => (
                                 <div className="flex flex-col gap-1.5">
-                                    <Label>Last Name</Label>
+                                    <Label htmlFor={field.name}>Last Name</Label>
                                     <Input
+                                        id={field.name}
                                         placeholder="Doe"
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
@@ -202,10 +204,12 @@ function CreateUserDialog({
                         name="email"
                         children={(field) => (
                             <div className="flex flex-col gap-1.5">
-                                <Label>Email</Label>
+                                <Label htmlFor={field.name}>Email</Label>
                                 <Input
+                                    id={field.name}
+                                    name={field.name}
                                     type="email"
-                                    placeholder="john@example.com"
+                                    autoComplete="email"
                                     value={field.state.value}
                                     onChange={(e) => field.handleChange(e.target.value)}
                                 />
@@ -217,8 +221,9 @@ function CreateUserDialog({
                         name="password"
                         children={(field) => (
                             <div className="flex flex-col gap-1.5">
-                                <Label>Password</Label>
+                                <Label htmlFor={field.name}>Password</Label>
                                 <Input
+                                    id={field.name}
                                     type="password"
                                     placeholder="Min 8 characters"
                                     value={field.state.value}
@@ -232,7 +237,7 @@ function CreateUserDialog({
                         name="roleIds"
                         children={(field) => (
                             <div className="flex flex-col gap-2">
-                                <Label>Roles</Label>
+                                <p className="text-sm font-medium">Roles</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     {allRoles.map((role) => (
                                         <label
@@ -240,6 +245,7 @@ function CreateUserDialog({
                                             className="flex items-center gap-2 cursor-pointer"
                                         >
                                             <Checkbox
+                                                id={`role-${role.id}`}
                                                 checked={field.state.value.includes(role.id)}
                                                 onCheckedChange={(checked) => {
                                                     field.handleChange(
@@ -249,7 +255,7 @@ function CreateUserDialog({
                                                     )
                                                 }}
                                             />
-                                            <span className="text-sm font-mono">{role.name}</span>
+                                            <label htmlFor={`role-${role.id}`} className="text-sm font-mono">{role.name}</label>
                                         </label>
                                     ))}
                                 </div>
@@ -333,8 +339,9 @@ function EditUserDialog({
                             name="firstName"
                             children={(field) => (
                                 <div className="flex flex-col gap-1.5">
-                                    <Label>First Name</Label>
+                                    <Label htmlFor={field.name}>First Name</Label>
                                     <Input
+                                        id={field.name}
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                     />
@@ -345,8 +352,9 @@ function EditUserDialog({
                             name="lastName"
                             children={(field) => (
                                 <div className="flex flex-col gap-1.5">
-                                    <Label>Last Name</Label>
+                                    <Label htmlFor={field.name}>Last Name</Label>
                                     <Input
+                                        id={field.name}
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                     />
@@ -360,12 +368,13 @@ function EditUserDialog({
                         children={(field) => (
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <Checkbox
+                                    id={field.name}
                                     checked={field.state.value}
                                     onCheckedChange={(checked) =>
                                         field.handleChange(checked as boolean)
                                     }
                                 />
-                                <span className="text-sm">Active</span>
+                                <label htmlFor={field.name}>Active</label>
                             </label>
                         )}
                     />

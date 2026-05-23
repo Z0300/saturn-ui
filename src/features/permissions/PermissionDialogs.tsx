@@ -176,9 +176,12 @@ function PermissionDialog({
             name="name"
             children={(field) => (
               <div className="flex flex-col gap-1.5">
-                <Label>Name</Label>
+                <Label htmlFor={field.name}>Name</Label>
                 <Input
+                  id={field.name}
                   value={field.state.value}
+                  autoComplete="off"
+                  placeholder="e.g. users:read"
                   onChange={(e) => field.handleChange(e.target.value)}
                   disabled={isEdit}
                 />
@@ -188,7 +191,7 @@ function PermissionDialog({
                   errors={field.state.meta.errors}
                 />
               </div>
-              
+
             )}
           />
 
@@ -196,8 +199,9 @@ function PermissionDialog({
             name="description"
             children={(field) => (
               <div className="flex flex-col gap-1.5">
-                <Label>Description</Label>
+                <Label htmlFor={field.name}>Description</Label>
                 <Input
+                  id={field.name}
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />

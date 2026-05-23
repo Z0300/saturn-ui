@@ -24,8 +24,7 @@ export interface AssignPermissionsRequest {
 }
 
 export interface RolesFilterRequest {
-  page?: number
-  size?: number
-  search?: string
+  page?: number;
+  size?: number;
+  searchTerm?: string;
 }
-
