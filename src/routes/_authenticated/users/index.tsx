@@ -5,9 +5,7 @@ import { Permissions } from "#/constants/permissions";
 
 
 export const Route = createFileRoute("/_authenticated/users/")({
-  beforeLoad: () => {
-    requirePermission(Permissions.USERS_READ);
-  },
+  beforeLoad: requirePermission(Permissions.USERS_READ),
   component: UsersPage,
   staticData: {
     title: "User Management"
