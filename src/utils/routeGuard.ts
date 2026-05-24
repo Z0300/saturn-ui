@@ -4,12 +4,10 @@ import type { AuthState } from "#/types";
 
 export function requirePermission(permission: string) {
   return ({ context }: { context: { auth: AuthState } }) => {
-    const { permissions, roles } = context.auth;
-
-    if (roles.includes(Roles.SUPER_ADMIN)) return;
+    const { permissions } = context.auth;
 
     if (!permissions.includes(permission)) {
-      throw redirect({ to: "/unauthorized", reloadDocument: false });
+      throw redirect({ to: "/unauthorized" });
     }
   };
 }
@@ -19,7 +17,7 @@ export function requireRole(role: string) {
     const { roles } = context.auth;
 
     if (!roles.includes(role)) {
-      throw redirect({ to: "/unauthorized", reloadDocument: false });
+      throw redirect({ to: "/unauthorized" });
     }
   };
 }
@@ -29,7 +27,7 @@ export function requireAnyRole(...requiredRoles: string[]) {
     const { roles } = context.auth;
 
     if (!requiredRoles.some((r) => roles.includes(r))) {
-      throw redirect({ to: "/unauthorized", reloadDocument: false });
+      throw redirect({ to: "/unauthorized" });
     }
   };
 }

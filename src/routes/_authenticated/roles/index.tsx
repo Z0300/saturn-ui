@@ -4,9 +4,7 @@ import { requirePermission } from '#/utils/routeGuard'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/roles/')({
-  beforeLoad: () => {
-    requirePermission(Permissions.PERMISSIONS_READ);
-  },
+  beforeLoad: requirePermission(Permissions.ROLES_READ),
   component: RolesPage,
   staticData: {
     title: "Role Management",
