@@ -11,14 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
-import { Route as AuthenticatedRolesIndexRouteImport } from './routes/_authenticated/roles/index'
-import { Route as AuthenticatedPermissionsIndexRouteImport } from './routes/_authenticated/permissions/index'
-import { Route as AuthenticatedRolesRoleIdPermissionsRouteImport } from './routes/_authenticated/roles/$roleId/permissions'
+import { Route as AdminRouteImport } from './routes/_admin'
+import { Route as AdminIndexRouteImport } from './routes/_admin/index'
+import { Route as AdminUsersIndexRouteImport } from './routes/_admin/users/index'
+import { Route as AdminRolesIndexRouteImport } from './routes/_admin/roles/index'
+import { Route as AdminPermissionsIndexRouteImport } from './routes/_admin/permissions/index'
+import { Route as AdminRolesRoleIdPermissionsRouteImport } from './routes/_admin/roles/$roleId/permissions'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -30,91 +30,90 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotFoundRoute = NotFoundRouteImport.update({
+  id: '/not-found',
+  path: '/not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const AdminRoute = AdminRouteImport.update({
+  id: '/_admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
-const AuthenticatedRolesIndexRoute = AuthenticatedRolesIndexRouteImport.update({
+const AdminRolesIndexRoute = AdminRolesIndexRouteImport.update({
   id: '/roles/',
   path: '/roles/',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
-const AuthenticatedPermissionsIndexRoute =
-  AuthenticatedPermissionsIndexRouteImport.update({
-    id: '/permissions/',
-    path: '/permissions/',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedRolesRoleIdPermissionsRoute =
-  AuthenticatedRolesRoleIdPermissionsRouteImport.update({
+const AdminPermissionsIndexRoute = AdminPermissionsIndexRouteImport.update({
+  id: '/permissions/',
+  path: '/permissions/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRolesRoleIdPermissionsRoute =
+  AdminRolesRoleIdPermissionsRouteImport.update({
     id: '/roles/$roleId/permissions',
     path: '/roles/$roleId/permissions',
-    getParentRoute: () => AuthenticatedRoute,
+    getParentRoute: () => AdminRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof AdminIndexRoute
   '/login': typeof LoginRoute
+  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthenticatedAdminRoute
-  '/permissions/': typeof AuthenticatedPermissionsIndexRoute
-  '/roles/': typeof AuthenticatedRolesIndexRoute
-  '/users/': typeof AuthenticatedUsersIndexRoute
-  '/roles/$roleId/permissions': typeof AuthenticatedRolesRoleIdPermissionsRoute
+  '/permissions/': typeof AdminPermissionsIndexRoute
+  '/roles/': typeof AdminRolesIndexRoute
+  '/users/': typeof AdminUsersIndexRoute
+  '/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthenticatedAdminRoute
-  '/': typeof AuthenticatedIndexRoute
-  '/permissions': typeof AuthenticatedPermissionsIndexRoute
-  '/roles': typeof AuthenticatedRolesIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
-  '/roles/$roleId/permissions': typeof AuthenticatedRolesRoleIdPermissionsRoute
+  '/': typeof AdminIndexRoute
+  '/permissions': typeof AdminPermissionsIndexRoute
+  '/roles': typeof AdminRolesIndexRoute
+  '/users': typeof AdminUsersIndexRoute
+  '/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
+  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/permissions/': typeof AuthenticatedPermissionsIndexRoute
-  '/_authenticated/roles/': typeof AuthenticatedRolesIndexRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
-  '/_authenticated/roles/$roleId/permissions': typeof AuthenticatedRolesRoleIdPermissionsRoute
+  '/_admin/': typeof AdminIndexRoute
+  '/_admin/permissions/': typeof AdminPermissionsIndexRoute
+  '/_admin/roles/': typeof AdminRolesIndexRoute
+  '/_admin/users/': typeof AdminUsersIndexRoute
+  '/_admin/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login'
+    | '/not-found'
     | '/signup'
     | '/unauthorized'
-    | '/admin'
     | '/permissions/'
     | '/roles/'
     | '/users/'
@@ -122,9 +121,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/not-found'
     | '/signup'
     | '/unauthorized'
-    | '/admin'
     | '/'
     | '/permissions'
     | '/roles'
@@ -132,21 +131,22 @@ export interface FileRouteTypes {
     | '/roles/$roleId/permissions'
   id:
     | '__root__'
-    | '/_authenticated'
+    | '/_admin'
     | '/login'
+    | '/not-found'
     | '/signup'
     | '/unauthorized'
-    | '/_authenticated/admin'
-    | '/_authenticated/'
-    | '/_authenticated/permissions/'
-    | '/_authenticated/roles/'
-    | '/_authenticated/users/'
-    | '/_authenticated/roles/$roleId/permissions'
+    | '/_admin/'
+    | '/_admin/permissions/'
+    | '/_admin/roles/'
+    | '/_admin/users/'
+    | '/_admin/roles/$roleId/permissions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
+  NotFoundRoute: typeof NotFoundRoute
   SignupRoute: typeof SignupRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
 }
@@ -167,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/not-found': {
+      id: '/not-found'
+      path: '/not-found'
+      fullPath: '/not-found'
+      preLoaderRoute: typeof NotFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -174,84 +181,73 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
+    '/_admin': {
+      id: '/_admin'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
+    '/_admin/': {
+      id: '/_admin/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
+    '/_admin/users/': {
+      id: '/_admin/users/'
       path: '/users'
       fullPath: '/users/'
-      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/roles/': {
-      id: '/_authenticated/roles/'
+    '/_admin/roles/': {
+      id: '/_admin/roles/'
       path: '/roles'
       fullPath: '/roles/'
-      preLoaderRoute: typeof AuthenticatedRolesIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AdminRolesIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/permissions/': {
-      id: '/_authenticated/permissions/'
+    '/_admin/permissions/': {
+      id: '/_admin/permissions/'
       path: '/permissions'
       fullPath: '/permissions/'
-      preLoaderRoute: typeof AuthenticatedPermissionsIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AdminPermissionsIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/roles/$roleId/permissions': {
-      id: '/_authenticated/roles/$roleId/permissions'
+    '/_admin/roles/$roleId/permissions': {
+      id: '/_admin/roles/$roleId/permissions'
       path: '/roles/$roleId/permissions'
       fullPath: '/roles/$roleId/permissions'
-      preLoaderRoute: typeof AuthenticatedRolesRoleIdPermissionsRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AdminRolesRoleIdPermissionsRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
 
-interface AuthenticatedRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedPermissionsIndexRoute: typeof AuthenticatedPermissionsIndexRoute
-  AuthenticatedRolesIndexRoute: typeof AuthenticatedRolesIndexRoute
-  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
-  AuthenticatedRolesRoleIdPermissionsRoute: typeof AuthenticatedRolesRoleIdPermissionsRoute
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminPermissionsIndexRoute: typeof AdminPermissionsIndexRoute
+  AdminRolesIndexRoute: typeof AdminRolesIndexRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminRolesRoleIdPermissionsRoute: typeof AdminRolesRoleIdPermissionsRoute
 }
 
-const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedPermissionsIndexRoute: AuthenticatedPermissionsIndexRoute,
-  AuthenticatedRolesIndexRoute: AuthenticatedRolesIndexRoute,
-  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
-  AuthenticatedRolesRoleIdPermissionsRoute:
-    AuthenticatedRolesRoleIdPermissionsRoute,
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminPermissionsIndexRoute: AdminPermissionsIndexRoute,
+  AdminRolesIndexRoute: AdminRolesIndexRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminRolesRoleIdPermissionsRoute: AdminRolesRoleIdPermissionsRoute,
 }
 
-const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
-)
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
+  NotFoundRoute: NotFoundRoute,
   SignupRoute: SignupRoute,
   UnauthorizedRoute: UnauthorizedRoute,
 }

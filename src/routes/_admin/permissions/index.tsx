@@ -3,8 +3,10 @@ import { requirePermission } from "@/utils/routeGuard";
 import { Permissions } from "@/constants/permissions";
 import { PermissionsPage } from "#/features/permissions/PermissionsPage";
 
-export const Route = createFileRoute("/_authenticated/permissions/")({
-  beforeLoad: requirePermission(Permissions.PERMISSIONS_READ),
+export const Route = createFileRoute("/_admin/permissions/")({
+  beforeLoad: () => {
+    requirePermission(Permissions.PERMISSIONS_READ);
+  },
   staticData: {
     title: "Permission Management",
   },

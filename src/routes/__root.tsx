@@ -6,14 +6,14 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
-
 import type { QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "../components/ui/tooltip";
 import type { AuthState } from "#/types";
 import { Toaster } from "sonner";
+import { NotFoundPage } from "#/components/not-found";
+import { ErrorPage } from "#/components/error";
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -31,6 +31,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   shellComponent: RootDocument,
   component: RootComponent,
+  notFoundComponent: NotFoundPage,
+  errorComponent: ErrorPage,
 });
 
 function RootComponent() {
@@ -43,12 +45,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-
       <body>
         <TooltipProvider>
           {children}
+          <Toaster position="top-right" />
+        </TooltipProvider>
 
-          {import.meta.env.DEV && (
+        <Scripts />
+
+        {import.meta.env.DEV && (
+          <div suppressHydrationWarning>
             <TanStackDevtools
               config={{ position: "bottom-right" }}
               plugins={[
@@ -59,11 +65,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 TanStackQueryDevtools,
               ]}
             />
-          )}
-        </TooltipProvider>
-
-        <Scripts />
-        <Toaster position="top-right"/>
+          </div>
+        )}
       </body>
     </html>
   );

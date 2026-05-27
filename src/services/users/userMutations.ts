@@ -7,6 +7,7 @@ import type {
   UpdateUserRequest,
   AssignRolesRequest,
 } from "@/types";
+import type { AxiosError } from "axios";
 
 export function useCreateUserMutation() {
   const queryClient = useQueryClient();
@@ -43,6 +44,10 @@ export function useDeleteUserMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success("User deleted successfully");
+    },
+    onError: (error) => {
+      const axiosError = error as AxiosError<{ message: string }>;
+      toast.error(axiosError.response?.data.message ?? "Something went wrong");
     },
   });
 }

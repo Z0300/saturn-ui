@@ -69,7 +69,7 @@ export function createRoleColumns({
                 variant="ghost"
                 size="icon"
                 title="Manage permissions"
-                onClick={() => navigate({ to: `/roles/$roleId/permissions`, params: { roleId: String(row.original.id) } })}
+                onClick={() => navigate({ to: `/roles/$roleId/permissions`, params: { roleId: `${row.original.id}` } })}
               >
                 <ShieldIcon className="h-4 w-4" />
               </Button>
