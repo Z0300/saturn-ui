@@ -4,8 +4,10 @@ import { requirePermission } from "#/utils/routeGuard";
 import { Permissions } from "#/constants/permissions";
 
 
-export const Route = createFileRoute("/_authenticated/users/")({
-  beforeLoad: requirePermission(Permissions.USERS_READ),
+export const Route = createFileRoute("/_admin/users/")({
+  beforeLoad: () => {
+    requirePermission(Permissions.USERS_READ)
+  },
   component: UsersPage,
   staticData: {
     title: "User Management"

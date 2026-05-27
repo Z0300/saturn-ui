@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import type { AuthResponse } from "@/types/auth";
 import type { LoginRequest, RegisterRequest } from "@/types/auth";
 import { getRedirectPath } from "@/utils/routeGuard";
-import { navigate } from "@/lib/navigate";
+import { decodeToken } from "@/utils/jwt";
 
 export function useLoginMutation(redirectTo?: string) {
   const { setAuth } = useAuthStore();
@@ -17,8 +17,9 @@ export function useLoginMutation(redirectTo?: string) {
 
     onSuccess: (response) => {
       setAuth(response.data);
-      const { roles, permissions } = useAuthStore.getState();
-
+      const decoded = decodeToken(response.data.accessToken);
+      const roles = decoded.roles ?? [];
+      const permissions = decoded.permissions ?? [];
       navigate({ to: redirectTo ?? getRedirectPath(roles, permissions) });
     },
   });
@@ -41,6 +42,7 @@ export function useRegisterMutation() {
 
 export function useLogoutMutation() {
   const { clearAuth } = useAuthStore();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -63,8 +63,8 @@ api.interceptors.response.use(
       try {
         const { data } = await axios.post(
           `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
-          null, // ← no body needed
-          { withCredentials: true }, // ← cookie sent automatically
+          null,
+          { withCredentials: true },
         );
 
         setAuth(data.data);
@@ -72,10 +72,11 @@ api.interceptors.response.use(
         queue = [];
         original.headers.Authorization = `Bearer ${data.data.accessToken}`;
         return api(original);
-      } catch {
+      } catch (refreshError) {
         clearAuth();
         queue = [];
         navigate({ to: "/login" });
+        return Promise.reject(refreshError); // ✅
       } finally {
         isRefreshing = false;
       }

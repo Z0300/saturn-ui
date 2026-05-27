@@ -1,35 +1,29 @@
 import { redirect } from "@tanstack/react-router";
+import { useAuthStore } from "@/store/authStore";
 import { Roles } from "@/constants/permissions";
-import type { AuthState } from "#/types";
 
 export function requirePermission(permission: string) {
-  return ({ context }: { context: { auth: AuthState } }) => {
-    const { permissions } = context.auth;
+  const { permissions } = useAuthStore.getState();
 
-    if (!permissions.includes(permission)) {
-      throw redirect({ to: "/unauthorized" });
-    }
-  };
+  if (!permissions.includes(permission)) {
+    throw redirect({ to: "/unauthorized" });
+  }
 }
 
 export function requireRole(role: string) {
-  return ({ context }: { context: { auth: AuthState } }) => {
-    const { roles } = context.auth;
+  const { roles } = useAuthStore.getState();
 
-    if (!roles.includes(role)) {
-      throw redirect({ to: "/unauthorized" });
-    }
-  };
+  if (!roles.includes(role)) {
+    throw redirect({ to: "/unauthorized" });
+  }
 }
 
 export function requireAnyRole(...requiredRoles: string[]) {
-  return ({ context }: { context: { auth: AuthState } }) => {
-    const { roles } = context.auth;
+  const { roles } = useAuthStore.getState();
 
-    if (!requiredRoles.some((r) => roles.includes(r))) {
-      throw redirect({ to: "/unauthorized" });
-    }
-  };
+  if (!requiredRoles.some((r) => roles.includes(r))) {
+    throw redirect({ to: "/unauthorized" });
+  }
 }
 
 export function getRedirectPath(

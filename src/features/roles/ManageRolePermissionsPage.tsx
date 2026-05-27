@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { notFound, useNavigate, useParams } from "@tanstack/react-router";
 import { ArrowLeftIcon, Loader2Icon, ShieldIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +11,16 @@ import type { Permission } from "@/types";
 
 export function ManageRolePermissionsPage() {
     const { roleId } = useParams({
-        from: "/_authenticated/roles/$roleId/permissions",
+        from: "/_admin/roles/$roleId/permissions",
     });
     const navigate = useNavigate();
 
-    const { data: role, isLoading: roleLoading } = useRole(Number(roleId));
+    const id = Number(roleId)
+
+    const { data: role, isLoading: roleLoading } = useRole(id);
     const { data: permsData, isLoading: permsLoading } = usePermissions();
     const assignMutation = useAssignPermissionsMutation();
+
 
     const allPermissions = permsData?.data ?? [];
     const [selected, setSelected] = useState<Set<number>>(new Set());

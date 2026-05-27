@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useMatches, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useMatches, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "#/components/ui/sidebar";
 import { SidebarInset } from "#/components/ui/sidebar";
 import { Separator } from "#/components/ui/separator";
@@ -14,61 +14,50 @@ import { AppSidebar } from "#/components/app-sidebar";
 import { useAuthStore } from "@/store/authStore";
 import { isTokenExpired } from "@/utils/jwt";
 import { api } from "@/lib/axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { registerNavigate } from "@/lib/navigate";
 
-export const Route = createFileRoute("/_authenticated")({
+export const Route = createFileRoute("/_admin")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { accessToken, setAuth, clearAuth } = useAuthStore.getState();
+
+    if (accessToken && !isTokenExpired(accessToken)) {
+      return;
+    }
+
+    try {
+      const { data } = await api.post("/v1/auth/refresh");
+      setAuth(data.data);
+    } catch (e) {
+      clearAuth();
+      throw redirect({ to: "/login" });
+    }
+  },
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
   const navigate = useNavigate();
+  const matches = useMatches();
   const { accessToken, setAuth, clearAuth } = useAuthStore();
-  const [isChecking, setIsChecking] = useState(true);
-
-  const matches = useMatches()
-  const currentMatch = matches[matches.length - 1]
-  const title = currentMatch?.staticData?.title ?? ''
+  const currentMatch = matches[matches.length - 1];
+  const title = currentMatch?.staticData?.title ?? "";
 
   useEffect(() => {
+    registerNavigate(({ to, replace }) => navigate({ to, replace }));
+  }, []);
 
-    registerNavigate(({ to, replace }) =>
-      navigate({ to, replace })
-    );
-
-    async function checkAuth() {
-      if (accessToken && !isTokenExpired(accessToken)) {
-        setIsChecking(false);
-        return;
-      }
-
-      try {
-        const { data } = await api.post("/v1/auth/refresh");
-        setAuth(data.data);
-      } catch {
-        clearAuth();
-        navigate({ to: "/login" });
-        return;
-      } finally {
-        setIsChecking(false);
-      }
+  useEffect(() => {
+    if (!accessToken || isTokenExpired(accessToken)) {
+      api.post("/v1/auth/refresh")
+        .then(({ data }) => setAuth(data.data))
+        .catch(() => {
+          clearAuth();
+          navigate({ to: "/login", replace: true });
+        });
     }
-
-    checkAuth();
-  }, [accessToken]);
-
-
-  if (!accessToken && !isChecking) {
-    return null;
-  }
-
-  if (isChecking) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <SidebarProvider>

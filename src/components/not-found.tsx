@@ -1,8 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
 
 export function NotFoundPage() {
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4 text-center">
       <p className="font-mono text-8xl font-medium tracking-tighter text-muted-foreground/30 select-none">
@@ -25,7 +27,7 @@ export function NotFoundPage() {
             Go home
           </Link>
         </Button>
-        <Button variant="outline" onClick={() => window.history.back()}>
+        <Button variant="outline" onClick={() => router.history.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Go back
         </Button>

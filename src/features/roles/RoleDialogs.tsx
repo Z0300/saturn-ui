@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Loader2Icon } from "lucide-react"
 import type { Role } from "@/types"
+import { ErrorDialog } from "#/components/error-dialog"
 
 interface RoleDialogsProps {
   isCreateOpen: boolean
@@ -80,9 +81,6 @@ export function RoleDialogs({
       )}
 
 
-
-
-
       <AlertDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
@@ -116,6 +114,15 @@ export function RoleDialogs({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Delete error dialog */}
+
+      <ErrorDialog
+        open={deleteMutation.isErrorOpen}
+        onClose={() => deleteMutation.setIsErrorOpen(false)}
+        title="Cannot delete role"
+        message={deleteMutation.errorMessage}
+      />
     </>
   )
 }
