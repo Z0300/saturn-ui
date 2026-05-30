@@ -83,27 +83,45 @@ export function RoleDialogs({
 
       <AlertDialog
         open={!!deleteTarget}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
       >
-        <AlertDialogContent>
+        <AlertDialogContent
+          onCloseAutoFocus={(e) => {
+            e.preventDefault()
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Role</AlertDialogTitle>
+
             <AlertDialogDescription>
               Are you sure you want to delete{" "}
-              <span className="font-mono font-semibold">{deleteTarget?.name}</span>?
-              All users with this role will lose its permissions.
+              <span className="font-mono font-semibold">
+                {deleteTarget?.name}
+              </span>
+              ? All users with this role will lose its permissions.
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
+
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() =>
-                deleteTarget &&
-                deleteMutation.mutate(deleteTarget.id, {
-                  onSuccess: () => setDeleteTarget(null),
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                if (!deleteTarget) return
+
+                const id = deleteTarget.id
+                  ; (document.activeElement as HTMLElement | null)?.blur()
+                setDeleteTarget(null)
+                queueMicrotask(() => {
+                  deleteMutation.mutate(id)
                 })
-              }
+              }}
             >
               {deleteMutation.isPending ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />

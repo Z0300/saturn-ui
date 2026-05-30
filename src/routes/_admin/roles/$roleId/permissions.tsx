@@ -10,15 +10,22 @@ export const Route = createFileRoute("/_admin/roles/$roleId/permissions")({
         requirePermission(Permissions.ROLES_UPDATE);
     },
     loader: async ({ params }) => {
-        const id = Number(params.roleId);
-        if (!Number.isInteger(id) || id <= 0) {
+        const raw = params.roleId;
+
+        if (!/^\d+$/.test(raw)) {
             throw notFound();
         }
+
+        const id = parseInt(raw, 10);
+
+        if (id <= 0) {
+            throw notFound();
+        }
+
         try {
             return await getRole(id);
         } catch (error: any) {
-            if (error?.response?.status === 404) throw notFound();
-            throw error;
+            throw notFound();
         }
     },
     component: ManageRolePermissionsPage,

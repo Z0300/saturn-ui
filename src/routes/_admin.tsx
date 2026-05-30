@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, useMatches, useNavigate } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute, Outlet, redirect, useMatches, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "#/components/ui/sidebar";
 import { SidebarInset } from "#/components/ui/sidebar";
 import { Separator } from "#/components/ui/separator";
@@ -16,10 +16,13 @@ import { isTokenExpired } from "@/utils/jwt";
 import { api } from "@/lib/axios";
 import { useEffect } from "react";
 import { registerNavigate } from "@/lib/navigate";
+import { NotFoundPage } from "#/components/not-found";
+import GlobalPending from "#/components/global-pending";
 
 export const Route = createFileRoute("/_admin")({
   ssr: false,
   beforeLoad: async () => {
+
     const { accessToken, setAuth, clearAuth } = useAuthStore.getState();
 
     if (accessToken && !isTokenExpired(accessToken)) {
@@ -34,10 +37,19 @@ export const Route = createFileRoute("/_admin")({
       throw redirect({ to: "/login" });
     }
   },
+  notFoundComponent: NotFoundPage,
   component: AuthenticatedLayout,
 });
 
 function AuthenticatedLayout() {
+  return (
+    <ClientOnly fallback={<GlobalPending />}>
+      <AuthenticatedLayoutInner />
+    </ClientOnly>
+  );
+}
+
+function AuthenticatedLayoutInner() {
   const navigate = useNavigate();
   const matches = useMatches();
   const { accessToken, setAuth, clearAuth } = useAuthStore();

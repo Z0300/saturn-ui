@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
+import { Avatar, AvatarFallback } from "#/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,12 +16,13 @@ import {
 } from "#/components/ui/sidebar";
 import { useLogoutMutation } from "#/services/auth/authMutations";
 import type { AuthUser } from "#/types";
+import { Link } from "@tanstack/react-router";
 import {
   ChevronsUpDownIcon,
-  SparklesIcon,
-  BadgeCheckIcon,
   BellIcon,
   LogOutIcon,
+  KeyRoundIcon,
+  UserIcon,
 } from "lucide-react";
 
 function getInitials(name?: string) {
@@ -82,16 +83,17 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <SparklesIcon />
-                Upgrade to Pro
+              <DropdownMenuItem asChild>
+                <Link to="/users/profile">
+                  <UserIcon />
+                  Profile
+                </Link>
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheckIcon />
-                Account
+              <DropdownMenuItem asChild>
+                <Link to="/change-password">
+                  <KeyRoundIcon />
+                  Change Password
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BellIcon />

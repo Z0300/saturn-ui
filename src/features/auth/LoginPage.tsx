@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { Link } from "@tanstack/react-router";
 import { LoginSchema } from "@/schemas";
 import {
   Card,

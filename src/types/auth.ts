@@ -72,3 +72,8 @@ export interface SidebarPermissions {
   canReadRoles: boolean;
   canReadPermissions: boolean;
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}

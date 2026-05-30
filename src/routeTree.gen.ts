@@ -11,13 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as AdminIndexRouteImport } from './routes/_admin/index'
+import { Route as AuthChangePasswordRouteImport } from './routes/_auth/change-password'
 import { Route as AdminUsersIndexRouteImport } from './routes/_admin/users/index'
 import { Route as AdminRolesIndexRouteImport } from './routes/_admin/roles/index'
 import { Route as AdminPermissionsIndexRouteImport } from './routes/_admin/permissions/index'
+import { Route as AdminUsersProfileIndexRouteImport } from './routes/_admin/users/profile/index'
 import { Route as AdminRolesRoleIdPermissionsRouteImport } from './routes/_admin/roles/$roleId/permissions'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
@@ -30,14 +32,13 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NotFoundRoute = NotFoundRouteImport.update({
-  id: '/not-found',
-  path: '/not-found',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -48,6 +49,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const AuthChangePasswordRoute = AuthChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/users/',
@@ -64,6 +70,11 @@ const AdminPermissionsIndexRoute = AdminPermissionsIndexRouteImport.update({
   path: '/permissions/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminUsersProfileIndexRoute = AdminUsersProfileIndexRouteImport.update({
+  id: '/users/profile/',
+  path: '/users/profile/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRolesRoleIdPermissionsRoute =
   AdminRolesRoleIdPermissionsRouteImport.update({
     id: '/roles/$roleId/permissions',
@@ -74,79 +85,87 @@ const AdminRolesRoleIdPermissionsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AdminIndexRoute
   '/login': typeof LoginRoute
-  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/change-password': typeof AuthChangePasswordRoute
   '/permissions/': typeof AdminPermissionsIndexRoute
   '/roles/': typeof AdminRolesIndexRoute
   '/users/': typeof AdminUsersIndexRoute
   '/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
+  '/users/profile/': typeof AdminUsersProfileIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof AdminIndexRoute
   '/login': typeof LoginRoute
-  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/': typeof AdminIndexRoute
+  '/change-password': typeof AuthChangePasswordRoute
   '/permissions': typeof AdminPermissionsIndexRoute
   '/roles': typeof AdminRolesIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
+  '/users/profile': typeof AdminUsersProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_admin': typeof AdminRouteWithChildren
+  '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/not-found': typeof NotFoundRoute
   '/signup': typeof SignupRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/_auth/change-password': typeof AuthChangePasswordRoute
   '/_admin/': typeof AdminIndexRoute
   '/_admin/permissions/': typeof AdminPermissionsIndexRoute
   '/_admin/roles/': typeof AdminRolesIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/roles/$roleId/permissions': typeof AdminRolesRoleIdPermissionsRoute
+  '/_admin/users/profile/': typeof AdminUsersProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login'
-    | '/not-found'
     | '/signup'
     | '/unauthorized'
+    | '/change-password'
     | '/permissions/'
     | '/roles/'
     | '/users/'
     | '/roles/$roleId/permissions'
+    | '/users/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/login'
-    | '/not-found'
     | '/signup'
     | '/unauthorized'
-    | '/'
+    | '/change-password'
     | '/permissions'
     | '/roles'
     | '/users'
     | '/roles/$roleId/permissions'
+    | '/users/profile'
   id:
     | '__root__'
     | '/_admin'
+    | '/_auth'
     | '/login'
-    | '/not-found'
     | '/signup'
     | '/unauthorized'
+    | '/_auth/change-password'
     | '/_admin/'
     | '/_admin/permissions/'
     | '/_admin/roles/'
     | '/_admin/users/'
     | '/_admin/roles/$roleId/permissions'
+    | '/_admin/users/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
-  NotFoundRoute: typeof NotFoundRoute
   SignupRoute: typeof SignupRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
 }
@@ -167,18 +186,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/not-found': {
-      id: '/not-found'
-      path: '/not-found'
-      fullPath: '/not-found'
-      preLoaderRoute: typeof NotFoundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_admin': {
@@ -194,6 +213,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_auth/change-password': {
+      id: '/_auth/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthChangePasswordRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_admin/users/': {
       id: '/_admin/users/'
@@ -216,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPermissionsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/users/profile/': {
+      id: '/_admin/users/profile/'
+      path: '/users/profile'
+      fullPath: '/users/profile/'
+      preLoaderRoute: typeof AdminUsersProfileIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/roles/$roleId/permissions': {
       id: '/_admin/roles/$roleId/permissions'
       path: '/roles/$roleId/permissions'
@@ -232,6 +265,7 @@ interface AdminRouteChildren {
   AdminRolesIndexRoute: typeof AdminRolesIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminRolesRoleIdPermissionsRoute: typeof AdminRolesRoleIdPermissionsRoute
+  AdminUsersProfileIndexRoute: typeof AdminUsersProfileIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -240,14 +274,25 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminRolesIndexRoute: AdminRolesIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminRolesRoleIdPermissionsRoute: AdminRolesRoleIdPermissionsRoute,
+  AdminUsersProfileIndexRoute: AdminUsersProfileIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AuthRouteChildren {
+  AuthChangePasswordRoute: typeof AuthChangePasswordRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthChangePasswordRoute: AuthChangePasswordRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
-  NotFoundRoute: NotFoundRoute,
   SignupRoute: SignupRoute,
   UnauthorizedRoute: UnauthorizedRoute,
 }
