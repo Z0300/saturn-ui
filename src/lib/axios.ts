@@ -1,4 +1,3 @@
-// lib/axios.ts
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import { isTokenExpired } from "../utils/jwt";
@@ -6,20 +5,27 @@ import { navigate } from "../lib/navigate";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, // ✅ sends httpOnly cookie automatically on every request
+  withCredentials: true,
 });
 
-// ── Request interceptor ───────────────────────────────────────────────────────
+const SKIP_REFRESH_ROUTES = [
+  "/v1/auth/login",
+  "/v1/auth/refresh",
+  "/v1/auth/register",
+];
+
+const isSkipRoute = (url?: string) =>
+  SKIP_REFRESH_ROUTES.some((route) => url?.includes(route));
+
 api.interceptors.request.use(async (config) => {
   const { accessToken, setAuth, clearAuth } = useAuthStore.getState();
 
-  // Access token expired — proactively refresh before sending request
-  if (accessToken && isTokenExpired(accessToken)) {
+  if (!isSkipRoute(config.url) && accessToken && isTokenExpired(accessToken)) {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/v1/auth/refresh`,
-        null, // ← no body needed, cookie is sent automatically
-        { withCredentials: true }, // ← send httpOnly cookie
+        null,
+        { withCredentials: true },
       );
       setAuth(data.data);
       config.headers.Authorization = `Bearer ${data.data.accessToken}`;
@@ -35,7 +41,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// ── Response interceptor ──────────────────────────────────────────────────────
 let isRefreshing = false;
 let queue: Array<(token: string) => void> = [];
 
@@ -43,12 +48,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
-
-    if (error.response?.status === 401 && !original._retry) {
+    if (
+      error.response?.status === 401 &&
+      !original._retry &&
+      !isSkipRoute(original.url)
+    ) {
       original._retry = true;
 
       if (isRefreshing) {
-        // Queue requests while refresh is in progress
         return new Promise((resolve) => {
           queue.push((token) => {
             original.headers.Authorization = `Bearer ${token}`;
@@ -58,7 +65,7 @@ api.interceptors.response.use(
       }
 
       isRefreshing = true;
-      const { setAuth, clearAuth } = useAuthStore.getState(); // ← no refreshToken needed
+      const { setAuth, clearAuth } = useAuthStore.getState();
 
       try {
         const { data } = await axios.post(

@@ -1,4 +1,4 @@
-import { notFound, useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { ArrowLeftIcon, Loader2Icon, ShieldIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";

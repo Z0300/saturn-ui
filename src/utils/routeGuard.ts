@@ -1,8 +1,11 @@
 import { redirect } from "@tanstack/react-router";
 import { useAuthStore } from "@/store/authStore";
 import { Roles } from "@/constants/permissions";
+import { isServer } from "./isServer";
 
 export function requirePermission(permission: string) {
+  if (isServer()) return;
+
   const { permissions } = useAuthStore.getState();
 
   if (!permissions.includes(permission)) {

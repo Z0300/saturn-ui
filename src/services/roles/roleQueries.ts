@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { useRbac } from "@/hooks/useRbac";
 import { Permissions } from "@/constants/permissions";
-import type { PaginatedResponse, Role, SingleResponse } from "@/types";
+import type { PaginatedResponse, Role } from "@/types";
 import type { RolesFilterRequest } from "@/types/role";
 import { getRole } from "./roleService";
 
