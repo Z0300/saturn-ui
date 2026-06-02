@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import type { PaginatedResponse, Permission } from "#/types";
 import { TablePagination } from "#/components/pagination";
+import { Loader2Icon } from "lucide-react";
 
 interface PermissionsTableProps {
   data?: PaginatedResponse<Permission> | undefined;
@@ -79,7 +80,7 @@ export function PermissionsTable({
             {isLoading && (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center py-8">
-                  Loading...
+                  <Loader2Icon className="h-4 w-4 animate-spin mx-auto" />
                 </TableCell>
               </TableRow>
             )}

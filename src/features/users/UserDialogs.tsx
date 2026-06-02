@@ -177,7 +177,6 @@ function CreateUserDialog({
                                     <Label htmlFor={field.name}>First Name</Label>
                                     <Input
                                         id={field.name}
-                                        placeholder="John"
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                     />
@@ -191,7 +190,6 @@ function CreateUserDialog({
                                     <Label htmlFor={field.name}>Last Name</Label>
                                     <Input
                                         id={field.name}
-                                        placeholder="Doe"
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                     />
@@ -209,7 +207,7 @@ function CreateUserDialog({
                                     id={field.name}
                                     name={field.name}
                                     type="email"
-                                    autoComplete="email"
+                                    autoComplete="off"
                                     value={field.state.value}
                                     onChange={(e) => field.handleChange(e.target.value)}
                                 />
